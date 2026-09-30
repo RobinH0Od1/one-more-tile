@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>One More Tile — a minimalist logic puzzle for Android</title>
+<meta name="description" content="One goal: turn every tile blue. A minimalist swipe puzzle with a daily brain teaser. Coming soon to Android.">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="One More Tile">
+<meta property="og:description" content="One goal: turn every tile blue. A minimalist swipe puzzle with a daily brain teaser.">
+<meta property="og:image" content="assets/shot_01.png">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="assets/icon.png">
+
+<style>
+  :root {
+    --bg: #090b14;
+    --panel: #121625;
+    --edge: #263149;
+    --blue: #35a7ff;
+    --blue-soft: #70d5ff;
+    --gold: #ffd580;
+    --white: #f5f7ff;
+    --muted: #a2adc3;
+    --maxw: 1040px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--white);
+    font: 17px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* The game's board glow, reused as a backdrop so the page and the
+     screenshots look like they come from the same place. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(1100px 620px at 15% -10%, rgba(53,167,255,.16), transparent 62%),
+      radial-gradient(900px 520px at 88% 4%, rgba(139,92,246,.12), transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap { position: relative; z-index: 1; max-width: var(--maxw); margin: 0 auto; padding: 0 20px; }
+
+  a { color: var(--blue-soft); }
+  a:hover { color: var(--white); }
+
+  h1, h2, h3 { line-height: 1.15; letter-spacing: -.02em; margin: 0; }
+
+  .eyebrow {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin: 0 0 14px;
+  }
+
+  /* ---------- header ---------- */
+
+  header { padding: 28px 0 0; }
+
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand img { width: 44px; height: 44px; border-radius: 11px; display: block; }
+  .brand span { font-weight: 800; letter-spacing: -.01em; }
+
+  .badge {
+    margin-left: auto;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid rgba(255,213,128,.35);
+    border-radius: 999px;
+    padding: 6px 13px;
+  }
+
+  /* ---------- hero ---------- */
+
+  .hero { padding: 68px 0 20px; max-width: 760px; }
+
+  .hero h1 {
+    font-size: clamp(38px, 7vw, 68px);
+    font-weight: 800;
+  }
+
+  .hero .lede {
+    font-size: clamp(18px, 2.4vw, 22px);
+    color: var(--muted);
+    margin: 22px 0 0;
+    max-width: 58ch;
+  }
+
+  .rule {
+    margin: 30px 0 0;
+    padding-left: 18px;
+    border-left: 3px solid var(--blue);
+    color: var(--white);
+    max-width: 58ch;
+  }
+
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; margin: 36px 0 0; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    border-radius: 13px;
+    padding: 14px 22px;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: transform .12s ease, background .12s ease, border-color .12s ease;
+  }
+  .btn:active { transform: translateY(1px); }
+
+  .btn-primary {
+    background: linear-gradient(180deg, var(--blue-soft), var(--blue));
+    color: #062134;
+    box-shadow: 0 10px 28px -12px rgba(53,167,255,.9);
+  }
+  .btn-primary:hover { color: #062134; }
+
+  .btn-ghost {
+    border-color: var(--edge);
+    color: var(--white);
+    background: rgba(255,255,255,.02);
+  }
+  .btn-ghost:hover { border-color: var(--blue); color: var(--white); }
+
+  .cta-note { font-size: 14px; color: var(--muted); margin: 14px 0 0; }
+
+  /* ---------- sections ---------- */
+
+  section { padding: 76px 0; }
+  section + section { border-top: 1px solid rgba(255,255,255,.06); }
+
+  .section-head { max-width: 62ch; margin-bottom: 34px; }
+  .section-head h2 { font-size: clamp(26px, 3.6vw, 34px); font-weight: 800; }
+  .section-head p { color: var(--muted); margin: 14px 0 0; }
+
+  /* ---------- clip + shots ---------- */
+
+  .media { display: grid; grid-template-columns: 300px 1fr; gap: 34px; align-items: start; }
+
+  video {
+    width: 100%;
+    border-radius: 20px;
+    border: 1px solid var(--edge);
+    display: block;
+    background: #000;
+  }
+
+  .shots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .shots img {
+    width: 100%;
+    height: auto;
+    border-radius: 14px;
+    border: 1px solid var(--edge);
+    display: block;
+  }
+
+  /* ---------- feature list ---------- */
+
+  .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--edge);
+    border-radius: 16px;
+    padding: 22px;
+  }
+  .card h3 { font-size: 17px; font-weight: 700; }
+  .card p { color: var(--muted); margin: 9px 0 0; font-size: 15px; }
+
+  /* ---------- press kit ---------- */
+
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,.07); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; width: 190px; }
+
+  .copyblock {
+    background: var(--panel);
+    border: 1px solid var(--edge);
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin: 16px 0 0;
+    font-size: 15px;
+    white-space: pre-wrap;
+    color: var(--muted);
+    max-height: 360px;
+    overflow: auto;
+  }
+
+  details { margin: 16px 0 0; }
+  summary { cursor: pointer; font-weight: 700; font-size: 15px; }
+
+  .dl { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0 0; }
+  .dl a {
+    font-size: 14px;
+    text-decoration: none;
+    border: 1px solid var(--edge);
+    border-radius: 10px;
+    padding: 9px 14px;
+    color: var(--white);
+  }
+  .dl a:hover { border-color: var(--blue); }
+
+  /* ---------- footer ---------- */
+
+  footer {
+    border-top: 1px solid rgba(255,255,255,.06);
+    padding: 34px 0 60px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  footer .row { display: flex; flex-wrap: wrap; gap: 18px; align-items: center; }
+  footer .row span { margin-left: auto; }
+
+  @media (max-width: 820px) {
+    .media { grid-template-columns: 1fr; }
+    .media video { max-width: 320px; }
+  }
+
+  @media (max-width: 560px) {
+    .shots { grid-template-columns: 1fr 1fr; }
+    .shots img:last-child { display: none; }
+    th { width: 130px; }
+  }
+</style>
+</head>
+
+<body>
+
+<div class="wrap">
+
+  <header>
+    <div class="brand">
+      <img src="assets/icon.png" alt="One More Tile icon">
+      <span>One More Tile</span>
+      <!-- LAUNCH DAY: change this badge to "Out now on Google Play". -->
+      <span class="badge">Coming soon</span>
+    </div>
+  </header>
+
+  <div class="hero">
+    <h1>One goal.<br>Turn every tile blue.</h1>
+
+    <p class="lede">A minimalist logic puzzle for people who like thinking, not hurrying. No timers. No lives. Just a small grid and the one route that solves it.</p>
+
+    <p class="rule">Swipe to move. Every tile you step on flips colour. Turn the whole board blue.</p>
+
+    <div class="cta">
+      <!--
+        LAUNCH DAY: replace this mailto button with the Play button:
+        <a class="btn btn-primary" href="PASTE_VERIFIED_PLAY_URL">Get it on Google Play</a>
+        Verify the store link from a device that was never a tester first.
+      -->
+      <a class="btn btn-primary" href="mailto:gamesbyrobin@gmail.com?subject=Notify%20me%20when%20One%20More%20Tile%20launches&amp;body=Let%20me%20know%20when%20it%20is%20on%20Google%20Play.">Email me at launch</a>
+      <a class="btn btn-ghost" href="#press">Press kit</a>
+    </div>
+
+    <p class="cta-note">Android, free, ad-supported. One email when it goes live, nothing else.</p>
+  </div>
+
+  <section id="watch">
+    <div class="media">
+      <video src="assets/clip.mp4" poster="assets/clip_poster.jpg" controls playsinline muted loop preload="none"></video>
+      <div>
+        <p class="eyebrow">Thirty seconds</p>
+        <h2 style="font-size:clamp(24px,3.4vw,32px);font-weight:800">One rule, and then the board starts arguing</h2>
+        <p style="color:var(--muted);margin:16px 0 0;max-width:52ch">Every tile you cross flips. Cross it again and it flips back. The route that turns the whole board blue is rarely the one you see first — and never the one you take by accident.</p>
+        <p style="color:var(--muted);margin:14px 0 0;max-width:52ch">New tiles change how you read the board as you go: ice you slide across, portals that move you somewhere else, twins that flip in pairs, fragile tiles that survive one step.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="look">
+    <div class="shots">
+      <img src="assets/shot_01.png" alt="A six-by-six board, half red and half blue, with the player mid-route">
+      <img src="assets/shot_02.png" alt="A level-complete screen showing a perfect solution, three stars and an earned power-up">
+      <img src="assets/shot_03.png" alt="A five-by-five board nearly solved, with the swipe control hint">
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="section-head">
+      <p class="eyebrow">What it is</p>
+      <h2>A puzzle that respects your time</h2>
+      <p>Built to be picked up for five minutes and put down without a countdown nagging you back.</p>
+    </div>
+
+    <div class="features">
+      <div class="card">
+        <h3>A campaign that keeps changing the rules</h3>
+        <p>A handcrafted campaign where every chapter introduces a new tile type, each with a short guide the first time you meet it.</p>
+      </div>
+      <div class="card">
+        <h3>A puzzle every day</h3>
+        <p>A fresh Daily Puzzle each day, with a streak to keep alive. It takes a few minutes. It is the good kind of habit.</p>
+      </div>
+      <div class="card">
+        <h3>Play at your own pace</h3>
+        <p>Chase three-star solutions, undo a move that went wrong, and earn power-ups by collecting stars.</p>
+      </div>
+      <div class="card">
+        <h3>Built to be pleasant</h3>
+        <p>Plays offline. No account, no sign-up, no social feed. A calm dark interface designed for one hand and late evenings.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="press">
+    <div class="section-head">
+      <p class="eyebrow">Press kit</p>
+      <h2>Everything you need to write about it</h2>
+      <p>Assets are free to use in coverage. If you need something that is not here, email me and you will have it the same day.</p>
+    </div>
+
+    <table>
+      <tr><th>Title</th><td>One More Tile: Logic Puzzle</td></tr>
+      <tr><th>Developer</th><td>Robin — solo developer</td></tr>
+      <tr><th>Platform</th><td>Android, via Google Play</td></tr>
+      <tr><th>Price</th><td>Free, supported by occasional ads. No in-app purchases.</td></tr>
+      <tr><th>Release</th><td>Coming soon<!-- LAUNCH DAY: put the real release date here. --></td></tr>
+      <tr><th>Languages</th><td>English, Slovenian, German, Spanish, French</td></tr>
+      <tr><th>Engine</th><td>Flutter</td></tr>
+      <tr><th>Contact</th><td><a href="mailto:gamesbyrobin@gmail.com">gamesbyrobin@gmail.com</a></td></tr>
+      <tr><th>Privacy policy</th><td><a href="privacy.html">privacy.html</a></td></tr>
+    </table>
+
+    <h3 style="margin-top:42px;font-size:17px">Short description</h3>
+    <div class="copyblock">Turn every tile blue. A minimalist swipe puzzle with a daily brain teaser.</div>
+
+    <details>
+      <summary>Full description</summary>
+      <div class="copyblock">One rule: turn every tile blue.
+
+Swipe to move. Every tile you step on flips colour. Sounds simple - until the board starts flipping back, and the one route that solves it is the one you almost missed.
+
+One More Tile is a minimalist logic puzzle for people who like thinking, not hurrying. No timers. No lives. No pressure. Just you, a small grid, and the quiet satisfaction of a board turning completely blue.
+
+HOW IT PLAYS
+
+- Swipe up, down, left or right to move to the next tile.
+- Every tile you land on flips colour: red becomes blue, blue becomes red.
+- Turn every playable tile blue to solve the board.
+- Beat the move limit to earn all three stars.
+
+A CAMPAIGN THAT KEEPS CHANGING THE RULES
+
+Chain tiles flip their neighbours too. Ice tiles carry you onward. Portals teleport you across the board. Twin tiles flip together however far apart they sit. Fragile tiles break the moment you step off them. Springboards carry you clean over whatever lies between. Plus switches, one-way tiles, locked tiles and prisms.
+
+A PUZZLE EVERY DAY
+
+A fresh Daily Puzzle every day, with a streak to keep alive.
+
+BUILT TO BE PLEASANT
+
+Plays offline. No account, no sign-up, no social feed. Responsive sound and haptics, both switchable in Settings. A calm dark interface designed for one hand and late evenings.
+
+One More Tile is free to play and supported by occasional ads. A rewarded ad can give you three extra moves when you want them - it is always optional and never required to finish a level.</div>
+    </details>
+
+    <h3 style="margin-top:42px;font-size:17px">How it was made</h3>
+    <p style="color:var(--muted);margin:12px 0 0;max-width:62ch">Every level in the campaign is authored by hand rather than generated, and a solver in the project proves each one is solvable inside its move limit before it ships. The store screenshots are rendered from the real game widgets and the promotional clips from real game sessions, so the marketing cannot drift from the product. Built solo, in Flutter, in five languages.</p>
+
+    <div class="dl">
+      <a href="assets/icon.png" download>Icon (512px)</a>
+      <a href="assets/shot_01.png" download>Screenshot 1</a>
+      <a href="assets/shot_02.png" download>Screenshot 2</a>
+      <a href="assets/shot_03.png" download>Screenshot 3</a>
+      <a href="assets/clip.mp4" download>Gameplay clip (MP4)</a>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="wrap row">
+    <a href="mailto:gamesbyrobin@gmail.com">gamesbyrobin@gmail.com</a>
+    <a href="privacy.html">Privacy</a>
+    <span>© 2026 One More Tile</span>
+  </div>
+</footer>
+
+</body>
+</html>
