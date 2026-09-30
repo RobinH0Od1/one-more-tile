@@ -5,7 +5,7 @@
   to "live" and fill in the release date (marked LAUNCH DAY below); the Play
   button and store links then appear everywhere they are needed.
 -->
-<html lang="en" data-release="soon">
+<html lang="en" data-release="live">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -510,21 +510,6 @@
   details .copyblock { margin-top: 12px; }
   summary { cursor: pointer; font-weight: 700; font-size: 15px; color: var(--cream); }
 
-  .dl { display: flex; flex-wrap: wrap; gap: 10px; margin: 26px 0 0; }
-  .dl a {
-    font: 800 13px/1 var(--display);
-    letter-spacing: .06em;
-    text-transform: uppercase;
-    text-decoration: none;
-    border: 1.2px solid var(--edge);
-    border-radius: 12px;
-    padding: 12px 14px;
-    color: var(--cream);
-    background: rgba(255,255,255,.03);
-  }
-  .dl a:hover { border-color: var(--blue-hi); }
-
-  .made { color: var(--muted); font-size: 15px; margin: 0; }
 
   /* ---------- footer ---------- */
 
@@ -791,7 +776,7 @@
     <div class="head">
       <p class="kicker">Press kit</p>
       <h2>Writing about it?</h2>
-      <p>Assets are free to use in coverage. If you need something that is not here, email me and you will have it the same day.</p>
+      <p>Need screenshots, art or anything else? Email me and you will have it the same day.</p>
     </div>
 
     <div class="press">
@@ -801,7 +786,7 @@
           <tr><th>Developer</th><td>Robin, solo developer</td></tr>
           <tr><th>Platform</th><td>Android, via Google Play</td></tr>
           <tr><th>Price</th><td>Free, supported by occasional ads. No in-app purchases.</td></tr>
-          <tr><th>Release</th><td><span class="soon-only">Coming soon</span><span class="live-only"><!-- LAUNCH DAY: put the real release date here. --></span></td></tr>
+          <tr><th>Release</th><td><span class="soon-only">Coming soon</span><span class="live-only">2026<!-- LAUNCH DAY: put the exact release date here. --></span></td></tr>
           <tr class="live-only"><th>Google Play</th><td><a href="https://play.google.com/store/apps/details?id=si.robin.onemoretile">One More Tile on Google Play</a></td></tr>
           <tr><th>Trailer</th><td><a href="https://www.youtube.com/watch?v=kXgHJeJQODw">Watch on YouTube</a></td></tr>
           <tr><th>Languages</th><td>English, Slovenian, German, Spanish, French</td></tr>
@@ -809,15 +794,6 @@
           <tr><th>Contact</th><td><a href="mailto:gamesbyrobin@gmail.com">gamesbyrobin@gmail.com</a></td></tr>
           <tr><th>Privacy policy</th><td><a href="privacy.html">privacy.html</a></td></tr>
         </table>
-
-        <div class="dl">
-          <a href="assets/icon.png" download>Icon (512px)</a>
-          <a href="assets/shot_01.png" download>Screenshot 1</a>
-          <a href="assets/shot_02.png" download>Screenshot 2</a>
-          <a href="assets/shot_03.png" download>Screenshot 3</a>
-          <a href="assets/trailer.jpg" download>Key art</a>
-          <a href="assets/clip.mp4" download>Gameplay clip</a>
-        </div>
       </div>
 
       <div>
@@ -854,9 +830,6 @@ Plays offline. No account, no sign-up, no social feed. Responsive sound and hapt
 
 One More Tile is free to play and supported by occasional ads. A rewarded ad can give you three extra moves when you want them - it is always optional and never required to finish a level.</div>
         </details>
-
-        <h3>How it was made</h3>
-        <p class="made block">Every level in the campaign is authored by hand rather than generated, and a solver in the project proves each one is solvable inside its move limit before it ships. The store screenshots are rendered from the real game widgets and the promotional clips from real game sessions, so the marketing cannot drift from the product. Built solo, in Flutter, in five languages.</p>
       </div>
     </div>
   </section>
