@@ -1,356 +1,833 @@
 <!doctype html>
-<html lang="en">
+<!--
+  One page, two states. data-release="soon" shows the coming-soon badge, the
+  notify-me button and "Coming soon" in the press kit. On launch day switch it
+  to "live" and fill in the release date (marked LAUNCH DAY below); the Play
+  button and store links then appear everywhere they are needed.
+-->
+<html lang="en" data-release="soon">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>One More Tile — a minimalist logic puzzle for Android</title>
-<meta name="description" content="One goal: turn every tile blue. A minimalist swipe puzzle with a daily brain teaser. Coming soon to Android.">
+<meta name="description" content="One goal: turn every tile blue. A minimalist swipe puzzle with a daily brain teaser, for Android.">
+<meta name="theme-color" content="#0a1820">
 
 <meta property="og:type" content="website">
 <meta property="og:title" content="One More Tile">
-<meta property="og:description" content="One goal: turn every tile blue. A minimalist swipe puzzle with a daily brain teaser.">
-<meta property="og:image" content="assets/shot_01.png">
+<meta property="og:description" content="One more. Then I'll stop. A minimalist swipe puzzle: turn every tile blue.">
+<meta property="og:image" content="assets/trailer.jpg">
 <meta name="twitter:card" content="summary_large_image">
 
 <link rel="icon" href="assets/icon.png">
 
 <style>
   :root {
-    --bg: #090b14;
-    --panel: #121625;
-    --edge: #263149;
+    --bg: #0a1820;
+    --bg-deep: #07121a;
+    --panel: #0f2430;
+    --panel-hi: #143140;
+    --edge: #24485a;
+    --cream: #f3f1e4;
+    --text: #e6eef3;
+    --muted: #9fb6c4;
     --blue: #35a7ff;
-    --blue-soft: #70d5ff;
+    --blue-hi: #70d5ff;
+    --blue-base: #165996;
+    --button-edge: #9de6ff;
+    --red: #ff4d67;
+    --red-hi: #ff8a98;
+    --red-base: #922d51;
+    --board: #172d46;
+    --board-edge: #355673;
     --gold: #ffd580;
-    --white: #f5f7ff;
-    --muted: #a2adc3;
-    --maxw: 1040px;
+    --ink: #092b4c;
+    --maxw: 1120px;
+    --display: "Roboto", "Segoe UI Variable Display", "Segoe UI", system-ui, -apple-system, sans-serif;
+    --body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   }
 
-  * { box-sizing: border-box; }
+  /* Written so that replacing "soon" with "live" anywhere in the file still works. */
+  :root:not([data-release="live"]) .live-only,
+  [data-release="live"] .soon-only { display: none !important; }
 
+  * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
 
   body {
     margin: 0;
     background: var(--bg);
-    color: var(--white);
-    font: 17px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color: var(--text);
+    font: 17px/1.6 var(--body);
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
 
-  /* The game's board glow, reused as a backdrop so the page and the
-     screenshots look like they come from the same place. */
+  /* The campaign backdrop: a teal wash with faint arcs, like the trailer. */
   body::before {
     content: "";
     position: fixed;
     inset: 0;
     background:
-      radial-gradient(1100px 620px at 15% -10%, rgba(53,167,255,.16), transparent 62%),
-      radial-gradient(900px 520px at 88% 4%, rgba(139,92,246,.12), transparent 60%);
+      radial-gradient(900px 700px at 85% 10%, rgba(40,110,140,.35), transparent 65%),
+      radial-gradient(800px 600px at 0% 100%, rgba(53,167,255,.10), transparent 60%),
+      repeating-radial-gradient(circle at 110% -10%, transparent 0 118px, rgba(255,255,255,.028) 118px 119px),
+      linear-gradient(180deg, #0c1f29, var(--bg-deep));
     pointer-events: none;
     z-index: 0;
   }
 
   .wrap { position: relative; z-index: 1; max-width: var(--maxw); margin: 0 auto; padding: 0 20px; }
 
-  a { color: var(--blue-soft); }
-  a:hover { color: var(--white); }
+  a { color: var(--blue-hi); }
+  a:hover { color: var(--cream); }
+  :focus-visible { outline: 3px solid var(--blue-hi); outline-offset: 3px; border-radius: 6px; }
 
-  h1, h2, h3 { line-height: 1.15; letter-spacing: -.02em; margin: 0; }
+  h1, h2, h3 { margin: 0; font-family: var(--display); color: var(--cream); }
 
-  .eyebrow {
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: .16em;
+  .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  .kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font: 800 13px/1 var(--display);
+    letter-spacing: .2em;
     text-transform: uppercase;
-    color: var(--blue);
-    margin: 0 0 14px;
+    color: var(--cream);
+    margin: 0 0 18px;
+  }
+  .kicker::before {
+    content: "";
+    width: 10px; height: 10px;
+    border-radius: 3px;
+    background: var(--blue-hi);
   }
 
-  /* ---------- header ---------- */
-
-  header { padding: 28px 0 0; }
-
-  .brand { display: flex; align-items: center; gap: 12px; }
-  .brand img { width: 44px; height: 44px; border-radius: 11px; display: block; }
-  .brand span { font-weight: 800; letter-spacing: -.01em; }
-
-  .badge {
-    margin-left: auto;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    color: var(--gold);
-    border: 1px solid rgba(255,213,128,.35);
-    border-radius: 999px;
-    padding: 6px 13px;
-  }
-
-  /* ---------- hero ---------- */
-
-  .hero { padding: 68px 0 20px; max-width: 760px; }
-
-  .hero h1 {
-    font-size: clamp(38px, 7vw, 68px);
-    font-weight: 800;
-  }
-
-  .hero .lede {
-    font-size: clamp(18px, 2.4vw, 22px);
-    color: var(--muted);
-    margin: 22px 0 0;
-    max-width: 58ch;
-  }
-
-  .rule {
-    margin: 30px 0 0;
-    padding-left: 18px;
-    border-left: 3px solid var(--blue);
-    color: var(--white);
-    max-width: 58ch;
-  }
-
-  .cta { display: flex; flex-wrap: wrap; gap: 12px; margin: 36px 0 0; }
+  /* ---------- buttons: the game's raised buttons ---------- */
 
   .btn {
     display: inline-flex;
     align-items: center;
-    gap: 9px;
-    border-radius: 13px;
-    padding: 14px 22px;
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: .04em;
+    justify-content: center;
+    gap: 10px;
+    min-height: 54px;
+    padding: 0 26px;
+    border-radius: 16px;
+    font: 900 16px/1 var(--display);
+    letter-spacing: .06em;
     text-transform: uppercase;
     text-decoration: none;
-    border: 1px solid transparent;
-    transition: transform .12s ease, background .12s ease, border-color .12s ease;
+    cursor: pointer;
+    border: 1.2px solid var(--edge);
+    color: var(--cream);
+    background: linear-gradient(180deg, #253954, #172338);
+    box-shadow: 0 4px 0 #060b15, 0 12px 22px -10px rgba(0,0,0,.6);
+    transition: transform .08s ease, box-shadow .08s ease;
   }
-  .btn:active { transform: translateY(1px); }
+  .btn:hover { color: var(--cream); filter: brightness(1.08); }
+  .btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #060b15; }
 
   .btn-primary {
-    background: linear-gradient(180deg, var(--blue-soft), var(--blue));
-    color: #062134;
-    box-shadow: 0 10px 28px -12px rgba(53,167,255,.9);
+    color: var(--ink);
+    border-color: var(--button-edge);
+    background: linear-gradient(180deg, var(--blue-hi), var(--blue));
+    box-shadow: 0 4px 0 var(--blue-base), 0 14px 26px -10px rgba(53,167,255,.7);
   }
-  .btn-primary:hover { color: #062134; }
+  .btn-primary:hover { color: var(--ink); }
+  .btn-primary:active { box-shadow: 0 1px 0 var(--blue-base); }
 
-  .btn-ghost {
-    border-color: var(--edge);
-    color: var(--white);
-    background: rgba(255,255,255,.02);
+  .btn svg { width: 18px; height: 18px; flex: none; fill: currentColor; }
+
+  /* ---------- header ---------- */
+
+  header { padding: 22px 0; }
+  .bar { display: flex; align-items: center; gap: 14px; }
+  .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--cream); }
+  .brand img { width: 42px; height: 42px; border-radius: 11px; display: block; }
+  .brand span { font: 900 17px/1 var(--display); letter-spacing: .08em; text-transform: uppercase; }
+
+  nav { margin-left: auto; display: flex; gap: 26px; }
+  nav a { color: var(--muted); text-decoration: none; font: 700 14px/1 var(--display); letter-spacing: .08em; text-transform: uppercase; }
+  nav a:hover { color: var(--cream); }
+
+  .badge {
+    font: 800 12px/1 var(--display);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    padding: 8px 14px;
+    white-space: nowrap;
   }
-  .btn-ghost:hover { border-color: var(--blue); color: var(--white); }
+  .badge.soon { color: var(--gold); border: 1px solid rgba(255,213,128,.4); }
+  .badge.live { color: var(--ink); background: var(--blue-hi); text-decoration: none; }
+  .badge.live:hover { color: var(--ink); }
 
-  .cta-note { font-size: 14px; color: var(--muted); margin: 14px 0 0; }
+  /* ---------- hero ---------- */
+
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+    gap: 56px;
+    align-items: center;
+    padding: 46px 0 90px;
+  }
+
+  .hero h1 {
+    font-size: clamp(50px, 8.2vw, 104px);
+    font-weight: 900;
+    line-height: .93;
+    letter-spacing: -.035em;
+    text-transform: uppercase;
+  }
+  .hero h1 em { font-style: normal; color: var(--blue-hi); }
+
+  .hero .lede {
+    font-size: clamp(18px, 2.1vw, 21px);
+    color: var(--muted);
+    margin: 26px 0 0;
+    max-width: 34ch;
+  }
+
+  .chant {
+    margin: 22px 0 0;
+    font: 900 14px/1 var(--display);
+    letter-spacing: .22em;
+    color: var(--blue-hi);
+  }
+
+  .cta { display: flex; flex-wrap: wrap; gap: 14px; margin: 34px 0 0; }
+  .cta-note { font-size: 14px; color: var(--muted); margin: 16px 0 0; }
+
+  /* ---------- the playable board ---------- */
+
+  .play {
+    position: relative;
+    justify-self: center;
+    width: min(100%, 440px);
+  }
+
+  .play-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 4px 14px;
+    font: 900 13px/1 var(--display);
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .play-head b { color: var(--cream); font-weight: 900; }
+  .play-head .target { color: var(--gold); }
+
+  .board {
+    position: relative;
+    padding: 14px;
+    border-radius: 26px;
+    background: linear-gradient(160deg, #1b3554, var(--board));
+    border: 1.5px solid var(--board-edge);
+    box-shadow: 0 6px 0 #0b1624, 0 40px 80px -30px rgba(0,0,0,.8), 0 0 90px -20px rgba(53,167,255,.35);
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    outline: none;
+  }
+  .board:focus-visible { box-shadow: 0 6px 0 #0b1624, 0 0 0 3px var(--blue-hi); }
+
+  .grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+  }
+
+  .tile {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 22%;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    background:
+      radial-gradient(circle, rgba(255,255,255,.2) 1.4px, transparent 1.9px) 0 0 / 33.3% 33.3%,
+      linear-gradient(180deg, #74d2ff, #3aa8ff);
+    box-shadow: inset 0 0 0 1.5px rgba(205,243,255,.6), 0 5px 0 #1d5d99;
+    transition: background .18s ease, box-shadow .18s ease;
+  }
+  .tile.red {
+    background:
+      repeating-linear-gradient(135deg, rgba(255,255,255,.13) 0 3px, transparent 3px 15px),
+      linear-gradient(180deg, var(--red-hi), var(--red));
+    box-shadow: inset 0 0 0 1.5px rgba(255,200,208,.6), 0 5px 0 var(--red-base);
+  }
+  .tile.flip { animation: flip .32s ease; }
+  @keyframes flip {
+    0% { transform: scale(1); }
+    45% { transform: scale(.84) rotateX(60deg); }
+    100% { transform: scale(1); }
+  }
+
+  .player {
+    position: absolute;
+    top: 0; left: 0;
+    width: calc((100% - 40px) / 5);
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+    transition: transform .16s cubic-bezier(.3,.7,.4,1);
+  }
+  .player::after {
+    content: "";
+    width: 46%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, #fff, #eef3ff 55%, #c6d8f5);
+    border: 3px solid #dbe8ff;
+    box-shadow: 0 0 0 5px rgba(112,213,255,.28), 0 4px 10px rgba(0,0,0,.35);
+  }
+  .board.bump .player { animation: bump .22s ease; }
+  @keyframes bump { 50% { filter: brightness(1.5); } }
+
+  .play-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 20px 4px 0;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .link-btn {
+    background: none;
+    border: 0;
+    padding: 6px 0;
+    color: var(--blue-hi);
+    font: 800 13px/1 var(--display);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    flex: none;
+  }
+  .link-btn:hover { color: var(--cream); }
+
+  .result {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    border-radius: 26px;
+    background: radial-gradient(circle, rgba(7,18,26,.88) 30%, rgba(7,18,26,.45) 75%);
+    text-align: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .25s ease, visibility .25s;
+  }
+  .result.show { opacity: 1; visibility: visible; }
+  .result h3 { font-size: 30px; font-weight: 900; letter-spacing: .02em; text-transform: uppercase; }
+  .result p { margin: 8px 0 0; color: var(--muted); }
+  .stars { display: flex; justify-content: center; gap: 8px; margin: 0 0 14px; }
+  .stars svg { width: 38px; height: 38px; }
+  .stars .on { fill: var(--gold); }
+  .stars .off { fill: rgba(255,255,255,.14); }
+  .result .cta { justify-content: center; margin-top: 22px; }
 
   /* ---------- sections ---------- */
 
-  section { padding: 76px 0; }
-  section + section { border-top: 1px solid rgba(255,255,255,.06); }
+  section { padding: 90px 0; position: relative; }
 
-  .section-head { max-width: 62ch; margin-bottom: 34px; }
-  .section-head h2 { font-size: clamp(26px, 3.6vw, 34px); font-weight: 800; }
-  .section-head p { color: var(--muted); margin: 14px 0 0; }
+  .head { max-width: 60ch; margin-bottom: 40px; }
+  .head h2 {
+    font-size: clamp(34px, 5vw, 56px);
+    font-weight: 900;
+    line-height: .98;
+    letter-spacing: -.025em;
+    text-transform: uppercase;
+  }
+  .head h2 em { font-style: normal; color: var(--blue-hi); }
+  .head p { color: var(--muted); margin: 18px 0 0; font-size: 18px; }
 
-  /* ---------- clip + shots ---------- */
+  /* ---------- trailer ---------- */
 
-  .media { display: grid; grid-template-columns: 300px 1fr; gap: 34px; align-items: start; }
-
-  video {
+  .trailer {
+    position: relative;
     width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 24px;
+    overflow: hidden;
+    border: 1.5px solid var(--edge);
+    background: #000 url("assets/trailer.jpg") center / cover no-repeat;
+    box-shadow: 0 40px 90px -40px rgba(0,0,0,.9);
+  }
+  .trailer iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .trailer-go {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 24px;
+  }
+  .playbtn {
+    position: absolute;
+    left: 50%; top: 50%;
+    width: 92px; height: 92px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(180deg, var(--blue-hi), var(--blue));
+    border: 1.5px solid var(--button-edge);
+    box-shadow: 0 5px 0 var(--blue-base), 0 20px 40px rgba(0,0,0,.5);
+    transition: transform .15s ease;
+  }
+  .trailer-go:hover .playbtn { transform: translate(-50%, -50%) scale(1.06); }
+  .playbtn svg { width: 36px; height: 36px; margin-left: 6px; fill: var(--ink); }
+  .fine { font-size: 13px; color: var(--muted); margin: 14px 0 0; }
+
+  /* ---------- how it plays ---------- */
+
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .step {
+    padding: 28px;
+    border-radius: 22px;
+    background: linear-gradient(145deg, var(--panel-hi), var(--panel));
+    border: 1.2px solid var(--edge);
+    box-shadow: 0 4px 0 #060b15;
+  }
+  .step .num { font: 900 15px/1 var(--display); letter-spacing: .18em; color: var(--blue-hi); }
+  .step h3 { font-size: 26px; font-weight: 900; text-transform: uppercase; margin: 14px 0 0; letter-spacing: -.01em; }
+  .step p { color: var(--muted); margin: 10px 0 0; font-size: 16px; }
+  .mini { display: flex; gap: 8px; margin: 22px 0 0; }
+  .mini .tile { width: 46px; cursor: default; box-shadow: inset 0 0 0 1.5px rgba(205,243,255,.6), 0 4px 0 #1d5d99; }
+  .mini .tile.red { box-shadow: inset 0 0 0 1.5px rgba(255,200,208,.6), 0 4px 0 var(--red-base); }
+  .mini .tile.here::after {
+    content: "";
+    position: absolute;
+    inset: 27%;
+    border-radius: 50%;
+    background: #f4f7ff;
+    border: 2px solid #dbe8ff;
+  }
+
+  /* ---------- tile types ---------- */
+
+  .types { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+  .type {
+    padding: 22px 18px 20px;
     border-radius: 20px;
-    border: 1px solid var(--edge);
+    background: linear-gradient(160deg, var(--panel-hi), var(--panel));
+    border: 1.2px solid var(--edge);
+    box-shadow: 0 4px 0 #060b15;
+    transition: transform .15s ease, border-color .15s ease;
+  }
+  .type:hover { transform: translateY(-3px); border-color: var(--c); }
+  .type .icon {
+    width: 56px; height: 56px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    background: color-mix(in srgb, var(--c) 18%, #0b1b26);
+    border: 1.5px solid color-mix(in srgb, var(--c) 70%, transparent);
+    box-shadow: 0 4px 0 color-mix(in srgb, var(--c) 30%, #050b12);
+  }
+  .type .icon svg { width: 30px; height: 30px; stroke: var(--c); fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  .type h3 { font-size: 16px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; margin: 16px 0 0; color: var(--c); }
+  .type p { font-size: 14.5px; line-height: 1.45; color: var(--muted); margin: 6px 0 0; }
+
+  /* ---------- screenshots ---------- */
+
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr) minmax(0, .9fr);
+    gap: 18px;
+    align-items: start;
+  }
+  .gallery img, .gallery video {
+    width: 100%;
     display: block;
+    border-radius: 20px;
+    border: 1.5px solid var(--edge);
+    box-shadow: 0 30px 60px -30px rgba(0,0,0,.9);
     background: #000;
   }
+  .gallery figure { margin: 0; }
+  .gallery figcaption { font-size: 13px; color: var(--muted); margin: 10px 2px 0; }
 
-  .shots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-  .shots img {
-    width: 100%;
-    height: auto;
-    border-radius: 14px;
-    border: 1px solid var(--edge);
-    display: block;
+  /* ---------- features ---------- */
+
+  .features { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+  .feature { padding: 6px 22px; border-left: 3px solid var(--blue-hi); }
+  .feature h3 { font-size: 19px; font-weight: 900; letter-spacing: -.005em; }
+  .feature p { color: var(--muted); margin: 8px 0 0; font-size: 15.5px; }
+
+  /* ---------- big call to action ---------- */
+
+  .final {
+    text-align: center;
+    padding: 70px 24px;
+    border-radius: 32px;
+    background:
+      radial-gradient(600px 300px at 50% 0%, rgba(112,213,255,.18), transparent 70%),
+      linear-gradient(160deg, var(--panel-hi), var(--panel));
+    border: 1.5px solid var(--edge);
   }
-
-  /* ---------- feature list ---------- */
-
-  .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
-
-  .card {
-    background: var(--panel);
-    border: 1px solid var(--edge);
-    border-radius: 16px;
-    padding: 22px;
+  .final h2 {
+    font-size: clamp(40px, 7vw, 84px);
+    font-weight: 900;
+    line-height: .92;
+    letter-spacing: -.035em;
+    text-transform: uppercase;
   }
-  .card h3 { font-size: 17px; font-weight: 700; }
-  .card p { color: var(--muted); margin: 9px 0 0; font-size: 15px; }
+  .final h2 em { font-style: normal; color: var(--blue-hi); }
+  .final p { color: var(--muted); margin: 18px auto 0; max-width: 46ch; }
+  .final .cta { justify-content: center; }
 
   /* ---------- press kit ---------- */
 
+  .press { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 44px; }
   table { width: 100%; border-collapse: collapse; font-size: 15px; }
-  th, td { text-align: left; padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,.07); vertical-align: top; }
-  th { color: var(--muted); font-weight: 600; width: 190px; }
+  th, td { text-align: left; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.08); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; width: 150px; }
+
+  .press h3 { font-size: 15px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; margin: 0 0 12px; }
+  .press .block + h3 { margin-top: 32px; }
 
   .copyblock {
-    background: var(--panel);
+    background: rgba(0,0,0,.2);
     border: 1px solid var(--edge);
     border-radius: 14px;
-    padding: 18px 20px;
-    margin: 16px 0 0;
+    padding: 16px 18px;
     font-size: 15px;
     white-space: pre-wrap;
     color: var(--muted);
-    max-height: 360px;
+    max-height: 340px;
     overflow: auto;
   }
+  details .copyblock { margin-top: 12px; }
+  summary { cursor: pointer; font-weight: 700; font-size: 15px; color: var(--cream); }
 
-  details { margin: 16px 0 0; }
-  summary { cursor: pointer; font-weight: 700; font-size: 15px; }
-
-  .dl { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0 0; }
+  .dl { display: flex; flex-wrap: wrap; gap: 10px; margin: 26px 0 0; }
   .dl a {
-    font-size: 14px;
+    font: 800 13px/1 var(--display);
+    letter-spacing: .06em;
+    text-transform: uppercase;
     text-decoration: none;
-    border: 1px solid var(--edge);
-    border-radius: 10px;
-    padding: 9px 14px;
-    color: var(--white);
+    border: 1.2px solid var(--edge);
+    border-radius: 12px;
+    padding: 12px 14px;
+    color: var(--cream);
+    background: rgba(255,255,255,.03);
   }
-  .dl a:hover { border-color: var(--blue); }
+  .dl a:hover { border-color: var(--blue-hi); }
+
+  .made { color: var(--muted); font-size: 15px; margin: 0; }
 
   /* ---------- footer ---------- */
 
-  footer {
-    border-top: 1px solid rgba(255,255,255,.06);
-    padding: 34px 0 60px;
-    color: var(--muted);
-    font-size: 14px;
-  }
-  footer .row { display: flex; flex-wrap: wrap; gap: 18px; align-items: center; }
-  footer .row span { margin-left: auto; }
+  footer { position: relative; z-index: 1; border-top: 1px solid rgba(255,255,255,.07); padding: 30px 0 56px; color: var(--muted); font-size: 14px; }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 20px; align-items: center; }
+  footer .copy { margin-left: auto; }
 
-  @media (max-width: 820px) {
-    .media { grid-template-columns: 1fr; }
-    .media video { max-width: 320px; }
+  /* ---------- responsive ---------- */
+
+  @media (max-width: 980px) {
+    .types { grid-template-columns: repeat(3, 1fr); }
+    .features { grid-template-columns: repeat(2, 1fr); row-gap: 30px; }
+    .gallery { grid-template-columns: repeat(3, 1fr); }
+    .gallery .clip { display: none; }
+  }
+
+  @media (max-width: 860px) {
+    nav { display: none; }
+    .bar .badge { margin-left: auto; }
+    .hero { grid-template-columns: 1fr; gap: 50px; padding-top: 30px; }
+    .steps { grid-template-columns: 1fr; }
+    .press { grid-template-columns: 1fr; }
   }
 
   @media (max-width: 560px) {
-    .shots { grid-template-columns: 1fr 1fr; }
-    .shots img:last-child { display: none; }
-    th { width: 130px; }
+    body { font-size: 16px; }
+    section { padding: 64px 0; }
+    .wrap { padding: 0 16px; }
+    .types { grid-template-columns: repeat(2, 1fr); }
+    .features { grid-template-columns: 1fr; }
+    .gallery { grid-template-columns: repeat(2, 1fr); }
+    .gallery figure:nth-child(3) { display: none; }
+    .grid { gap: 7px; }
+    .player { width: calc((100% - 28px) / 5); }
+    .board { padding: 10px; }
+    .cta .btn { width: 100%; }
+    .result .cta .btn { width: auto; }
+    th { width: 110px; }
+    .playbtn { width: 70px; height: 70px; }
+    .final { padding: 54px 18px; }
+  }
+
+  @media (max-width: 380px) {
+    .brand span { display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .tile.flip, .board.bump .player { animation: none; }
+    .player, .type, .playbtn { transition: none; }
   }
 </style>
 </head>
 
 <body>
 
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="star" viewBox="0 0 24 24"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></symbol>
+    <symbol id="play-icon" viewBox="0 0 24 24"><path d="M4.5 3.2v17.6c0 .8.9 1.3 1.6.9l14.3-8.8c.6-.4.6-1.3 0-1.7L6.1 2.3c-.7-.4-1.6.1-1.6.9z"/></symbol>
+  </defs>
+</svg>
+
 <div class="wrap">
 
   <header>
-    <div class="brand">
-      <img src="assets/icon.png" alt="One More Tile icon">
-      <span>One More Tile</span>
-      <!-- LAUNCH DAY: change this badge to "Out now on Google Play". -->
-      <span class="badge">Coming soon</span>
+    <div class="bar">
+      <a class="brand" href="#top">
+        <img src="assets/icon.png" alt="">
+        <span>One More Tile</span>
+      </a>
+      <nav aria-label="Sections">
+        <a href="#trailer">Trailer</a>
+        <a href="#tiles">Tiles</a>
+        <a href="#press">Press kit</a>
+      </nav>
+      <span class="badge soon soon-only">Coming soon</span>
+      <a class="badge live live-only" href="https://play.google.com/store/apps/details?id=si.robin.onemoretile">Out now on Google Play</a>
     </div>
   </header>
 
+  <main id="top">
+
   <div class="hero">
-    <h1>One goal.<br>Turn every tile blue.</h1>
+    <div>
+      <p class="kicker">A minimalist logic puzzle</p>
+      <h1>One more.<br>Then I’ll<br><em>stop.</em></h1>
+      <p class="lede">Swipe to move. Every tile you step on flips colour. Turn the whole board blue. No timers, no lives, just the one route that solves it.</p>
+      <p class="chant">SWIPE. &nbsp;FLIP. &nbsp;SOLVE.</p>
 
-    <p class="lede">A minimalist logic puzzle for people who like thinking, not hurrying. No timers. No lives. Just a small grid and the one route that solves it.</p>
-
-    <p class="rule">Swipe to move. Every tile you step on flips colour. Turn the whole board blue.</p>
-
-    <div class="cta">
-      <!--
-        LAUNCH DAY: replace this mailto button with the Play button:
-        <a class="btn btn-primary" href="PASTE_VERIFIED_PLAY_URL">Get it on Google Play</a>
-        Verify the store link from a device that was never a tester first.
-      -->
-      <a class="btn btn-primary" href="mailto:gamesbyrobin@gmail.com?subject=Notify%20me%20when%20One%20More%20Tile%20launches&amp;body=Let%20me%20know%20when%20it%20is%20on%20Google%20Play.">Email me at launch</a>
-      <a class="btn btn-ghost" href="#press">Press kit</a>
+      <div class="cta">
+        <a class="btn btn-primary live-only" href="https://play.google.com/store/apps/details?id=si.robin.onemoretile">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#play-icon"/></svg>
+          Get it on Google Play
+        </a>
+        <a class="btn btn-primary soon-only" href="mailto:gamesbyrobin@gmail.com?subject=Notify%20me%20when%20One%20More%20Tile%20launches&amp;body=Let%20me%20know%20when%20it%20is%20on%20Google%20Play.">Email me at launch</a>
+        <a class="btn" href="#trailer">Watch the trailer</a>
+      </div>
+      <p class="cta-note live-only">Free on Android. Supported by occasional ads, no in-app purchases.</p>
+      <p class="cta-note soon-only">Coming to Android, free. One email when it goes live, nothing else.</p>
     </div>
 
-    <p class="cta-note">Android, free, ad-supported. One email when it goes live, nothing else.</p>
+    <div class="play">
+      <div class="play-head">
+        <span>Moves <b id="moves">0</b> / 11</span>
+        <span class="target">★★★ in 7</span>
+      </div>
+
+      <div class="board" id="board" tabindex="0" role="application"
+           aria-label="Playable level. Turn every tile blue."
+           aria-describedby="play-hint">
+        <div class="grid" id="grid"><div class="player" id="player" aria-hidden="true"></div></div>
+
+        <div class="result" id="result" aria-hidden="true">
+          <div>
+            <div class="stars" id="stars"></div>
+            <h3 id="result-title">Solved!</h3>
+            <p id="result-text"></p>
+            <div class="cta">
+              <button class="btn" type="button" id="again">Play again</button>
+              <a class="btn btn-primary live-only" href="https://play.google.com/store/apps/details?id=si.robin.onemoretile">One more</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="play-foot">
+        <span id="play-hint">Try a real level: swipe, tap a neighbouring tile or use the arrow keys.</span>
+        <button class="link-btn" type="button" id="reset">Restart</button>
+      </div>
+      <p class="visually-hidden" id="status" aria-live="polite"></p>
+    </div>
   </div>
 
-  <section id="watch">
-    <div class="media">
-      <video src="assets/clip.mp4" poster="assets/clip_poster.jpg" controls playsinline muted loop preload="none"></video>
-      <div>
-        <p class="eyebrow">Thirty seconds</p>
-        <h2 style="font-size:clamp(24px,3.4vw,32px);font-weight:800">One rule, and then the board starts arguing</h2>
-        <p style="color:var(--muted);margin:16px 0 0;max-width:52ch">Every tile you cross flips. Cross it again and it flips back. The route that turns the whole board blue is rarely the one you see first — and never the one you take by accident.</p>
-        <p style="color:var(--muted);margin:14px 0 0;max-width:52ch">New tiles change how you read the board as you go: ice you slide across, portals that move you somewhere else, twins that flip in pairs, fragile tiles that survive one step.</p>
+  <section id="trailer">
+    <div class="head">
+      <p class="kicker">Trailer</p>
+      <h2>Small grid.<br><em>Big satisfaction.</em></h2>
+    </div>
+    <div class="trailer" id="trailer-frame">
+      <button class="trailer-go" id="trailer-go" type="button" aria-label="Play the trailer (loads YouTube)">
+        <span class="playbtn"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#play-icon"/></svg></span>
+      </button>
+    </div>
+    <p class="fine">The trailer loads from YouTube only when you press play. <a href="https://www.youtube.com/watch?v=kXgHJeJQODw">Open it on YouTube</a>.</p>
+  </section>
+
+  <section id="how">
+    <div class="head">
+      <p class="kicker">How it plays</p>
+      <h2>One rule.<br><em>Then the board argues back.</em></h2>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <span class="num">01</span>
+        <h3>Swipe</h3>
+        <p>Up, down, left or right. You move one tile at a time.</p>
+        <div class="mini" aria-hidden="true"><span class="tile here"></span><span class="tile red"></span><span class="tile red"></span></div>
+      </div>
+      <div class="step">
+        <span class="num">02</span>
+        <h3>Flip</h3>
+        <p>Every tile you land on flips. Red turns blue, and blue turns red again.</p>
+        <div class="mini" aria-hidden="true"><span class="tile"></span><span class="tile here"></span><span class="tile red"></span></div>
+      </div>
+      <div class="step">
+        <span class="num">03</span>
+        <h3>Solve</h3>
+        <p>Turn every tile blue within the move limit. Find the shortest route for three stars.</p>
+        <div class="mini" aria-hidden="true"><span class="tile"></span><span class="tile"></span><span class="tile here"></span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="tiles">
+    <div class="head">
+      <p class="kicker">The campaign</p>
+      <h2>Tiles that<br><em>change the rules.</em></h2>
+      <p>A handcrafted campaign where new tiles keep changing how you read the board. Each one gets a short guide the first time you meet it.</p>
+    </div>
+    <div class="types">
+      <div class="type" style="--c:#8bdceb">
+        <div class="icon"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 4v24M5.6 10l20.8 12M5.6 22l20.8-12M12 5.5l4 3 4-3M12 26.5l4-3 4 3"/></svg></div>
+        <h3>Ice</h3><p>Slides until the path ends.</p>
+      </div>
+      <div class="type" style="--c:#ad98ed">
+        <div class="icon"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="11"/><circle cx="16" cy="16" r="6"/><circle cx="16" cy="16" r="1.5"/></svg></div>
+        <h3>Portal</h3><p>Moves you to its pair.</p>
+      </div>
+      <div class="type" style="--c:#e79bd4">
+        <div class="icon"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="9" cy="16" r="5"/><circle cx="23" cy="16" r="5"/><path d="M14 16h4" stroke-dasharray="1 3"/></svg></div>
+        <h3>Twins</h3><p>Flip one and its partner flips too, however far away.</p>
+      </div>
+      <div class="type" style="--c:#d99cab">
+        <div class="icon"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="5" y="5" width="22" height="22" rx="5"/><path d="M15 5l-2 7 5 4-3 5 2 6"/></svg></div>
+        <h3>Fragile</h3><p>Breaks when you leave.</p>
+      </div>
+      <div class="type" style="--c:#9be3b8">
+        <div class="icon"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 24c4-12 20-12 24 0"/><path d="M24 17l4 7-8 .5"/></svg></div>
+        <h3>Springboard</h3><p>Carries you two tiles on, over whatever lies between.</p>
+      </div>
+      <div class="type" style="--c:#80c8e0">
+        <div class="icon"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="12" y="12" width="8" height="8" rx="2"/><path d="M16 4v4M16 24v4M4 16h4M24 16h4"/></svg></div>
+        <h3>Chain</h3><p>Flips itself and the tiles beside it.</p>
+      </div>
+      <div class="type" style="--c:#c7b4f2">
+        <div class="icon"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 9l7 12H9z"/><path d="M6 6l3 3M26 6l-3 3M6 26l3-3M26 26l-3-3"/></svg></div>
+        <h3>Prism</h3><p>Flips its four corner neighbours instead.</p>
+      </div>
+      <div class="type" style="--c:#e8c779">
+        <div class="icon"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="4" y="11" width="24" height="10" rx="5"/><circle cx="22" cy="16" r="3"/></svg></div>
+        <h3>Switch</h3><p>Flips its linked tiles.</p>
+      </div>
+      <div class="type" style="--c:#70d5ff">
+        <div class="icon"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 16h18M18 9l7 7-7 7"/></svg></div>
+        <h3>One way</h3><p>Leave only in the shown direction.</p>
+      </div>
+      <div class="type" style="--c:#9daedb">
+        <div class="icon"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="7" y="14" width="18" height="13" rx="3"/><path d="M11 14v-3a5 5 0 0 1 10 0v3"/></svg></div>
+        <h3>Locked</h3><p>Stays the same when you enter.</p>
       </div>
     </div>
   </section>
 
   <section id="look">
-    <div class="shots">
-      <img src="assets/shot_01.png" alt="A six-by-six board, half red and half blue, with the player mid-route">
-      <img src="assets/shot_02.png" alt="A level-complete screen showing a perfect solution, three stars and an earned power-up">
-      <img src="assets/shot_03.png" alt="A five-by-five board nearly solved, with the swipe control hint">
+    <div class="head">
+      <p class="kicker">In the game</p>
+      <h2>Calm, dark,<br><em>made for one hand.</em></h2>
+    </div>
+    <div class="gallery">
+      <figure><img src="assets/shot_01.png" alt="A six-by-six board, half red and half blue, with the player mid-route" loading="lazy"><figcaption>One goal: all blue.</figcaption></figure>
+      <figure><img src="assets/shot_02.png" alt="A level-complete screen showing a perfect solution, three stars and an earned power-up" loading="lazy"><figcaption>Earn stars and power-ups.</figcaption></figure>
+      <figure><img src="assets/shot_03.png" alt="A five-by-five board nearly solved, with the swipe control hint" loading="lazy"><figcaption>One swipe, a new possibility.</figcaption></figure>
+      <figure class="clip"><video src="assets/clip.mp4" poster="assets/clip_poster.jpg" controls playsinline muted loop preload="none"></video><figcaption>Ten seconds of play.</figcaption></figure>
     </div>
   </section>
 
   <section id="about">
-    <div class="section-head">
-      <p class="eyebrow">What it is</p>
-      <h2>A puzzle that respects your time</h2>
-      <p>Built to be picked up for five minutes and put down without a countdown nagging you back.</p>
-    </div>
-
     <div class="features">
-      <div class="card">
-        <h3>A campaign that keeps changing the rules</h3>
-        <p>A handcrafted campaign where every chapter introduces a new tile type, each with a short guide the first time you meet it.</p>
-      </div>
-      <div class="card">
-        <h3>A puzzle every day</h3>
-        <p>A fresh Daily Puzzle each day, with a streak to keep alive. It takes a few minutes. It is the good kind of habit.</p>
-      </div>
-      <div class="card">
-        <h3>Play at your own pace</h3>
-        <p>Chase three-star solutions, undo a move that went wrong, and earn power-ups by collecting stars.</p>
-      </div>
-      <div class="card">
-        <h3>Built to be pleasant</h3>
-        <p>Plays offline. No account, no sign-up, no social feed. A calm dark interface designed for one hand and late evenings.</p>
+      <div class="feature"><h3>A puzzle every day</h3><p>A fresh Daily Puzzle each day, with a streak to keep alive.</p></div>
+      <div class="feature"><h3>Your own pace</h3><p>No timers and no lives. Undo a wrong move, chase three stars, earn power-ups.</p></div>
+      <div class="feature"><h3>Plays offline</h3><p>No account, no sign-up, no social feed. Sound and haptics you can switch off.</p></div>
+      <div class="feature"><h3>Five languages</h3><p>English, Slovenian, German, Spanish and French.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="final">
+      <h2>Just one<br><em>more tile.</em></h2>
+      <p class="live-only">Free on Android. You know how this goes.</p>
+      <p class="soon-only">Coming soon to Android, free. You know how this goes.</p>
+      <div class="cta">
+        <a class="btn btn-primary live-only" href="https://play.google.com/store/apps/details?id=si.robin.onemoretile">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#play-icon"/></svg>
+          Get it on Google Play
+        </a>
+        <a class="btn btn-primary soon-only" href="mailto:gamesbyrobin@gmail.com?subject=Notify%20me%20when%20One%20More%20Tile%20launches&amp;body=Let%20me%20know%20when%20it%20is%20on%20Google%20Play.">Email me at launch</a>
+        <a class="btn" href="#top">Play the demo level</a>
       </div>
     </div>
   </section>
 
   <section id="press">
-    <div class="section-head">
-      <p class="eyebrow">Press kit</p>
-      <h2>Everything you need to write about it</h2>
+    <div class="head">
+      <p class="kicker">Press kit</p>
+      <h2>Writing about it?</h2>
       <p>Assets are free to use in coverage. If you need something that is not here, email me and you will have it the same day.</p>
     </div>
 
-    <table>
-      <tr><th>Title</th><td>One More Tile: Logic Puzzle</td></tr>
-      <tr><th>Developer</th><td>Robin — solo developer</td></tr>
-      <tr><th>Platform</th><td>Android, via Google Play</td></tr>
-      <tr><th>Price</th><td>Free, supported by occasional ads. No in-app purchases.</td></tr>
-      <tr><th>Release</th><td>Coming soon<!-- LAUNCH DAY: put the real release date here. --></td></tr>
-      <tr><th>Languages</th><td>English, Slovenian, German, Spanish, French</td></tr>
-      <tr><th>Engine</th><td>Flutter</td></tr>
-      <tr><th>Contact</th><td><a href="mailto:gamesbyrobin@gmail.com">gamesbyrobin@gmail.com</a></td></tr>
-      <tr><th>Privacy policy</th><td><a href="privacy.html">privacy.html</a></td></tr>
-    </table>
+    <div class="press">
+      <div>
+        <table>
+          <tr><th>Title</th><td>One More Tile: Logic Puzzle</td></tr>
+          <tr><th>Developer</th><td>Robin, solo developer</td></tr>
+          <tr><th>Platform</th><td>Android, via Google Play</td></tr>
+          <tr><th>Price</th><td>Free, supported by occasional ads. No in-app purchases.</td></tr>
+          <tr><th>Release</th><td><span class="soon-only">Coming soon</span><span class="live-only"><!-- LAUNCH DAY: put the real release date here. --></span></td></tr>
+          <tr class="live-only"><th>Google Play</th><td><a href="https://play.google.com/store/apps/details?id=si.robin.onemoretile">One More Tile on Google Play</a></td></tr>
+          <tr><th>Trailer</th><td><a href="https://www.youtube.com/watch?v=kXgHJeJQODw">Watch on YouTube</a></td></tr>
+          <tr><th>Languages</th><td>English, Slovenian, German, Spanish, French</td></tr>
+          <tr><th>Engine</th><td>Flutter</td></tr>
+          <tr><th>Contact</th><td><a href="mailto:gamesbyrobin@gmail.com">gamesbyrobin@gmail.com</a></td></tr>
+          <tr><th>Privacy policy</th><td><a href="privacy.html">privacy.html</a></td></tr>
+        </table>
 
-    <h3 style="margin-top:42px;font-size:17px">Short description</h3>
-    <div class="copyblock">Turn every tile blue. A minimalist swipe puzzle with a daily brain teaser.</div>
+        <div class="dl">
+          <a href="assets/icon.png" download>Icon (512px)</a>
+          <a href="assets/shot_01.png" download>Screenshot 1</a>
+          <a href="assets/shot_02.png" download>Screenshot 2</a>
+          <a href="assets/shot_03.png" download>Screenshot 3</a>
+          <a href="assets/trailer.jpg" download>Key art</a>
+          <a href="assets/clip.mp4" download>Gameplay clip</a>
+        </div>
+      </div>
 
-    <details>
-      <summary>Full description</summary>
-      <div class="copyblock">One rule: turn every tile blue.
+      <div>
+        <h3>Short description</h3>
+        <div class="copyblock block">Turn every tile blue. A minimalist swipe puzzle with a daily brain teaser.</div>
+
+        <h3>Full description</h3>
+        <details class="block">
+          <summary>Show the store description</summary>
+          <div class="copyblock">One rule: turn every tile blue.
 
 Swipe to move. Every tile you step on flips colour. Sounds simple - until the board starts flipping back, and the one route that solves it is the one you almost missed.
 
@@ -376,29 +853,167 @@ BUILT TO BE PLEASANT
 Plays offline. No account, no sign-up, no social feed. Responsive sound and haptics, both switchable in Settings. A calm dark interface designed for one hand and late evenings.
 
 One More Tile is free to play and supported by occasional ads. A rewarded ad can give you three extra moves when you want them - it is always optional and never required to finish a level.</div>
-    </details>
+        </details>
 
-    <h3 style="margin-top:42px;font-size:17px">How it was made</h3>
-    <p style="color:var(--muted);margin:12px 0 0;max-width:62ch">Every level in the campaign is authored by hand rather than generated, and a solver in the project proves each one is solvable inside its move limit before it ships. The store screenshots are rendered from the real game widgets and the promotional clips from real game sessions, so the marketing cannot drift from the product. Built solo, in Flutter, in five languages.</p>
-
-    <div class="dl">
-      <a href="assets/icon.png" download>Icon (512px)</a>
-      <a href="assets/shot_01.png" download>Screenshot 1</a>
-      <a href="assets/shot_02.png" download>Screenshot 2</a>
-      <a href="assets/shot_03.png" download>Screenshot 3</a>
-      <a href="assets/clip.mp4" download>Gameplay clip (MP4)</a>
+        <h3>How it was made</h3>
+        <p class="made block">Every level in the campaign is authored by hand rather than generated, and a solver in the project proves each one is solvable inside its move limit before it ships. The store screenshots are rendered from the real game widgets and the promotional clips from real game sessions, so the marketing cannot drift from the product. Built solo, in Flutter, in five languages.</p>
+      </div>
     </div>
   </section>
 
+  </main>
 </div>
 
 <footer>
-  <div class="wrap row">
+  <div class="wrap">
     <a href="mailto:gamesbyrobin@gmail.com">gamesbyrobin@gmail.com</a>
     <a href="privacy.html">Privacy</a>
-    <span>© 2026 One More Tile</span>
+    <a href="https://www.youtube.com/watch?v=kXgHJeJQODw">Trailer</a>
+    <span class="copy">© 2026 One More Tile</span>
   </div>
 </footer>
+
+<script>
+(() => {
+  // Level 2 of the real campaign: route UULDDRU from the centre of a 5×5
+  // board, seven moves for three stars, eleven allowed. A move goes one tile
+  // and flips the tile it lands on; the starting tile is not flipped.
+  const SIZE = 5, START = 12, LIMIT = 11, TARGET = 7;
+  const START_RED = [1, 2, 6, 11, 12];
+
+  const grid = document.getElementById('grid');
+  const board = document.getElementById('board');
+  const player = document.getElementById('player');
+  const movesEl = document.getElementById('moves');
+  const result = document.getElementById('result');
+  const status = document.getElementById('status');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let red, pos, moves, over;
+  const tiles = [];
+
+  for (let i = 0; i < SIZE * SIZE; i++) {
+    const t = document.createElement('button');
+    t.type = 'button';
+    t.className = 'tile';
+    t.tabIndex = -1;
+    t.addEventListener('click', () => tapTile(i));
+    grid.insertBefore(t, player);
+    tiles.push(t);
+  }
+
+  function reset() {
+    red = new Set(START_RED);
+    pos = START;
+    moves = 0;
+    over = false;
+    result.classList.remove('show');
+    result.setAttribute('aria-hidden', 'true');
+    render();
+    say('New game. Five red tiles.');
+  }
+
+  function render() {
+    tiles.forEach((t, i) => {
+      t.classList.toggle('red', red.has(i));
+      t.setAttribute('aria-label', (red.has(i) ? 'Red' : 'Blue') + ' tile' + (i === pos ? ', you are here' : ''));
+    });
+    const step = tiles[1].offsetLeft - tiles[0].offsetLeft;
+    player.style.transform = `translate(${(pos % SIZE) * step}px, ${Math.floor(pos / SIZE) * step}px)`;
+    movesEl.textContent = moves;
+  }
+
+  function say(text) { status.textContent = text; }
+
+  function move(dr, dc) {
+    if (over) return;
+    const r = Math.floor(pos / SIZE) + dr, c = (pos % SIZE) + dc;
+    if (r < 0 || r >= SIZE || c < 0 || c >= SIZE) {
+      if (!reduced) { board.classList.remove('bump'); void board.offsetWidth; board.classList.add('bump'); }
+      return;
+    }
+    pos = r * SIZE + c;
+    red.has(pos) ? red.delete(pos) : red.add(pos);
+    moves++;
+    const t = tiles[pos];
+    if (!reduced) { t.classList.remove('flip'); void t.offsetWidth; t.classList.add('flip'); }
+    render();
+    if (red.size === 0) finish(true);
+    else if (moves >= LIMIT) finish(false);
+    else say(`${red.size} red left. Move ${moves} of ${LIMIT}.`);
+  }
+
+  function finish(won) {
+    over = true;
+    const stars = !won ? 0 : moves <= TARGET ? 3 : moves <= TARGET + 2 ? 2 : 1;
+    const title = won ? (stars === 3 ? 'Perfect!' : 'Solved!') : 'Out of moves';
+    const text = won
+      ? (stars === 3 ? `All blue in ${moves} moves. That is the best route.` : `All blue in ${moves} moves. The best route takes ${TARGET}.`)
+      : `The best route takes ${TARGET} moves. One more try?`;
+    document.getElementById('stars').innerHTML = won
+      ? [0, 1, 2].map(i => `<svg class="${i < stars ? 'on' : 'off'}" aria-hidden="true"><use href="#star"/></svg>`).join('')
+      : '';
+    document.getElementById('result-title').textContent = title;
+    document.getElementById('result-text').textContent = text;
+    setTimeout(() => {
+      result.classList.add('show');
+      result.setAttribute('aria-hidden', 'false');
+      say(`${title} ${text}`);
+    }, reduced ? 0 : 380);
+  }
+
+  function tapTile(i) {
+    const dr = Math.floor(i / SIZE) - Math.floor(pos / SIZE);
+    const dc = (i % SIZE) - (pos % SIZE);
+    if (Math.abs(dr) + Math.abs(dc) === 1) move(dr, dc);
+  }
+
+  const KEYS = {
+    ArrowUp: [-1, 0], ArrowDown: [1, 0], ArrowLeft: [0, -1], ArrowRight: [0, 1],
+    w: [-1, 0], s: [1, 0], a: [0, -1], d: [0, 1],
+  };
+  board.addEventListener('keydown', e => {
+    if (result.contains(e.target)) return;
+    const k = KEYS[e.key.length === 1 ? e.key.toLowerCase() : e.key];
+    if (k) { e.preventDefault(); move(...k); }
+  });
+
+  // Swipes. A short press without much travel is left to the tile's click.
+  let sx = 0, sy = 0, tracking = false, swiped = false;
+  board.addEventListener('pointerdown', e => {
+    if (over) return;
+    tracking = true; sx = e.clientX; sy = e.clientY;
+    board.focus({ preventScroll: true });
+  });
+  board.addEventListener('pointerup', e => {
+    if (!tracking) return;
+    tracking = false;
+    const dx = e.clientX - sx, dy = e.clientY - sy;
+    if (Math.max(Math.abs(dx), Math.abs(dy)) < 24) return;
+    swiped = true;
+    Math.abs(dx) > Math.abs(dy) ? move(0, Math.sign(dx)) : move(Math.sign(dy), 0);
+  });
+  board.addEventListener('pointercancel', () => { tracking = false; });
+  grid.addEventListener('click', e => { if (swiped) { e.stopPropagation(); swiped = false; } }, true);
+
+  for (const id of ['reset', 'again']) {
+    document.getElementById(id).addEventListener('click', () => { reset(); board.focus({ preventScroll: true }); });
+  }
+  addEventListener('resize', render);
+
+  reset();
+
+  // The trailer is a still until pressed, so YouTube is only contacted on request.
+  document.getElementById('trailer-go').addEventListener('click', () => {
+    const f = document.createElement('iframe');
+    f.src = 'https://www.youtube-nocookie.com/embed/kXgHJeJQODw?autoplay=1&rel=0';
+    f.title = 'One More Tile trailer';
+    f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+    f.allowFullscreen = true;
+    document.getElementById('trailer-frame').replaceChildren(f);
+  });
+})();
+</script>
 
 </body>
 </html>
