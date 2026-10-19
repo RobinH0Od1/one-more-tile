@@ -15,13 +15,19 @@
 <body>
   <main>
     <h1>One More Tile Privacy Policy</h1>
-    <p><strong>Effective date:</strong> 30 September 2026</p>
+    <p><strong>Effective date:</strong> 19 October 2026</p>
 
     <p>One More Tile is a local puzzle game published by Robin. This policy describes the information handled by the Android and iOS versions of the app.</p>
 
     <h2>Information stored on your device</h2>
-    <p>The game stores gameplay progress, best scores, daily-puzzle history, and sound, haptic, and local ad-frequency preferences on your device. This data is not sent to the publisher and is removed when you clear the app's data or uninstall the app.</p>
-    <p>The game does not require an account and does not ask for your name, email address, contacts, photos, files, calendar, microphone, camera, or precise location.</p>
+    <p>The game stores gameplay progress, best scores, daily-puzzle history, and sound, haptic, and local ad-frequency preferences on your device. Unless you sign in and your progress is saved to your account (see below), this data is not sent to the publisher and is removed when you clear the app's data or uninstall the app.</p>
+    <p>The game does not require an account. Unless you choose to sign in (see below), it does not ask for your name or email address, and it never asks for your contacts, photos, files, calendar, microphone, camera, or precise location.</p>
+
+    <h2 id="account">Optional account and saved progress</h2>
+    <p>Signing in is optional, and the game plays the same without it. You can sign in from the game's Settings screen with Google, with Apple, or with an email address and password. The app uses Firebase Authentication, a Google service, to create and keep your account. Firebase Authentication receives a unique account identifier and your email address and, where Google or Apple shares it, your name. For an email account, Firebase stores your password in a protected, hashed form; the publisher never sees it. With Sign in with Apple you can choose to hide your email address, in which case Apple provides a private relay address instead. Firebase may also process technical data such as your IP address and device information to keep sign-in secure.</p>
+    <p>While you are signed in, your game progress is saved to your account so you can continue on another device or after reinstalling: the levels you have unlocked and your best results, your Daily Puzzle history and streak, your power-ups, and which tutorials you have already seen. It is stored in Cloud Firestore, a Google service, in the European Union, under your account's identifier, and contains no name or email address. Sound, language, reminder and ad settings stay on your device.</p>
+    <p>This information is used only to provide your account and its saved progress. Analytics records only that a sign-in happened and with which method, never who signed in.</p>
+    <p>You can sign out at any time in Settings. Signing out keeps the progress on your device. To delete your account, choose Delete account in Settings and confirm by signing in once more or entering your password; your saved progress is deleted from Cloud Firestore, the account is removed from Firebase Authentication, and the app's access to your Google or Apple account is revoked. Progress on your device stays until you clear the app's data or uninstall it. You can also ask for your account to be deleted by emailing <a href="mailto:gamesbyrobin@gmail.com">gamesbyrobin@gmail.com</a> from the address you signed in with.</p>
 
     <h2>Advertising and Google Mobile Ads</h2>
     <p>The game may show occasional interstitial ads and optional rewarded ads. Ads are provided by Google's Google Mobile Ads SDK. Depending on your device, region, consent choices, and ad availability, Google may process information such as your IP address (which can be used to estimate general location), ad or device identifiers, interactions with the app and ads, and diagnostics.</p>
@@ -29,14 +35,14 @@
     <p>Where required, Google's consent dialog is shown before ads are requested. You can revisit available privacy choices from the game's Settings screen.</p>
 
     <h2>Analytics and crash reporting</h2>
-    <p>The app uses Firebase Analytics to collect low-volume gameplay events such as level starts, completions, failures, restarts, abandonments, star results, and rewarded/interstitial ad outcomes. The event payloads configured by the publisher do not contain names, email addresses, precise location, board contents, or user-generated data. Firebase and Google SDKs may automatically process app/device identifiers, IP addresses, diagnostics, and similar technical data under Google's privacy policy and service settings.</p>
+    <p>The app uses Firebase Analytics to collect low-volume gameplay events such as level starts, completions, failures, restarts, abandonments and exits, star results, tutorial progress, which screens are opened (such as the Daily Puzzle), how long after first opening the app each of these happened, and rewarded/interstitial ad outcomes. The event payloads configured by the publisher do not contain names, email addresses, precise location, board contents, or user-generated data. Firebase and Google SDKs may automatically process app/device identifiers, IP addresses, diagnostics, and similar technical data under Google's privacy policy and service settings.</p>
     <p>The app uses Firebase Crashlytics to report application errors and crashes. Crash reports may include non-sensitive technical context such as the current level, attempt number, remaining moves, and game state. Firebase processes this information under Google's privacy policy. Analytics and Crashlytics are disabled in debug builds unless a developer explicitly enables a local test flag; production builds collect only after Firebase has been configured.</p>
 
     <h2>Sharing</h2>
-    <p>The publisher does not sell or independently share your locally stored game progress. Information processed by Google Mobile Ads, Firebase Analytics, and Firebase Crashlytics is transmitted to Google as described in Google's documentation and policies.</p>
+    <p>The publisher does not sell or independently share your locally stored game progress or your account information. Information processed by Google Mobile Ads, Firebase Analytics, Firebase Crashlytics, Firebase Authentication, and Cloud Firestore is transmitted to Google as described in Google's documentation and policies. If you sign in with Apple, Apple processes that sign-in under Apple's privacy policy.</p>
 
     <h2>Children's privacy</h2>
-    <p>One More Tile does not knowingly collect personal information from children. The app has no account system or direct mechanism for submitting personal information.</p>
+    <p>One More Tile does not knowingly collect personal information from children. Signing in is optional and never needed to play, and the app has no other mechanism for submitting personal information.</p>
 
     <h2>Your choices and questions</h2>
     <p>You can remove locally stored game data by clearing the app's storage or uninstalling the app. For questions or privacy requests, contact the developer at <a href="mailto:gamesbyrobin@gmail.com">gamesbyrobin@gmail.com</a>.</p>
@@ -45,3 +51,4 @@
   </main>
 </body>
 </html>
+
